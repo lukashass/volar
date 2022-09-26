@@ -21,7 +21,7 @@ importers:
       vitepress: 1.0.0-alpha.13
       vue: 3.2.38
     devDependencies:
-      '@types/node': 18.7.20
+      '@types/node': 18.7.21
       typescript: 4.9.1-beta
       vite: 3.1.3
       vitest: 0.23.4
@@ -68,6 +68,7 @@ importers:
       '@vue/reactivity': ^3.2.38
       esbuild: 0.15.7
       esbuild-plugin-copy: latest
+      ovsx: ^0.5.1
       path-browserify: ^1.0.1
       punycode: ^2.1.1
       semver: ^7.3.7
@@ -85,6 +86,7 @@ importers:
       '@vue/reactivity': 3.2.38
       esbuild: 0.15.7
       esbuild-plugin-copy: 1.3.0_esbuild@0.15.7
+      ovsx: 0.5.1
       path-browserify: 1.0.1
       punycode: 2.1.1
       semver: 7.3.7
@@ -798,6 +800,7 @@ packages:
       path: 0.12.7
       yargs: 17.5.1
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -862,6 +865,7 @@ packages:
       write-pkg: 4.0.0
       yargs: 17.5.1
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -876,6 +880,7 @@ packages:
       envinfo: 7.8.1
       yargs: 17.5.1
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -890,6 +895,7 @@ packages:
       p-map: 4.0.0
       write-json-file: 4.3.0
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -903,6 +909,7 @@ packages:
       chalk: 4.1.2
       columnify: 1.6.0
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -942,6 +949,7 @@ packages:
       write-pkg: 4.0.0
       yargs: 17.5.1
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -967,6 +975,7 @@ packages:
       write-json-file: 4.3.0
       yargs: 17.5.1
     transitivePeerDependencies:
+      - bluebird
       - encoding
       - supports-color
     dev: false
@@ -1012,6 +1021,8 @@ packages:
       promise-retry: 2.0.1
       semver: 7.3.7
       which: 2.0.2
+    transitivePeerDependencies:
+      - bluebird
     dev: false
     optional: true
 
@@ -1058,6 +1069,7 @@ packages:
       read-package-json-fast: 2.0.3
       which: 2.0.2
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -1220,8 +1232,8 @@ packages:
     resolution: {integrity: sha512-46yIhxSe5xEaJZXWdIBP7GU4HDTG8/eo0qd9atdiL+lFpA03y8KS+lkTN834TWJj5767GbWv4n/P6efyTFt1Dw==}
     dev: true
 
-  /@types/node/18.7.20:
-    resolution: {integrity: sha512-adzY4vLLr5Uivmx8+zfSJ5fbdgKxX8UMtjtl+17n0B1q1Nz8JEmE151vefMdpD+1gyh+77weN4qEhej/O7budQ==}
+  /@types/node/18.7.21:
+    resolution: {integrity: sha512-rLFzK5bhM0YPyCoTC8bolBjMk7bwnZ8qeZUBslBfjZQou2ssJdWslx9CZ8DGM+Dx7QXQiiTVZ/6QO6kwtHkZCA==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -1717,6 +1729,8 @@ packages:
       ssri: 9.0.1
       tar: 6.1.11
       unique-filename: 2.0.1
+    transitivePeerDependencies:
+      - bluebird
     dev: false
     optional: true
 
@@ -1833,6 +1847,10 @@ packages:
     engines: {node: '>=10'}
     dev: false
     optional: true
+
+  /ci-info/2.0.0:
+    resolution: {integrity: sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==}
+    dev: true
 
   /ci-info/3.3.2:
     resolution: {integrity: sha512-xmDt/QIAdeZ9+nfdPsaBCpMvHNLFiLdjj59qjqn+6iPe6YmHGQ35sBnQ8uslRBXFmXkiZQOJRjvQeoGppoTjjg==}
@@ -2061,8 +2079,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      is-text-path: 1.0.1
       JSONStream: 1.3.5
+      is-text-path: 1.0.1
       lodash: 4.17.21
       meow: 8.1.2
       split2: 3.2.2
@@ -2157,6 +2175,11 @@ packages:
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: 2.0.0
     dev: false
@@ -2164,6 +2187,11 @@ packages:
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: 2.1.3
     dev: false
@@ -2413,7 +2441,7 @@ packages:
     optional: true
 
   /ee-first/1.1.1:
-    resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
+    resolution: {integrity: sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=}
     dev: false
     optional: true
 
@@ -2813,6 +2841,16 @@ packages:
     dev: false
     optional: true
 
+  /follow-redirects/1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: true
+
   /fresh/0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -2965,7 +3003,7 @@ packages:
     optional: true
 
   /github-from-package/0.0.0:
-    resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
+    resolution: {integrity: sha1-l/tdlr/eiXMxPyDoKI75oWf6ZM4=}
     dev: true
 
   /glob-parent/5.1.2:
@@ -3299,6 +3337,13 @@ packages:
     dev: false
     optional: true
 
+  /is-ci/2.0.0:
+    resolution: {integrity: sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==}
+    hasBin: true
+    dependencies:
+      ci-info: 2.0.0
+    dev: true
+
   /is-ci/3.0.1:
     resolution: {integrity: sha512-ZYvCgrefwqoQ6yTyYUbQu64HsITZ3NfKX1lzaEYdkTDcfKzzCI/wthRRYKkdjHKFVgNiXKAKm65Zo1pk2as/QQ==}
     hasBin: true
@@ -3553,6 +3598,8 @@ packages:
     resolution: {integrity: sha512-JOUdCNlc21G50afBXfErUrr1RKymbgzlrO5KURY+wmDG1Uvd2jmxUJcHgylb/mYXy2SjiNZyYim/ptUBGsIi3A==}
     dependencies:
       morgan: 1.10.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
     optional: true
 
@@ -3636,6 +3683,7 @@ packages:
       npm-package-arg: 9.1.0
       npm-registry-fetch: 13.3.1
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -3650,6 +3698,7 @@ packages:
       semver: 7.3.7
       ssri: 9.0.1
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -3797,6 +3846,7 @@ packages:
       socks-proxy-agent: 7.0.0
       ssri: 9.0.1
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -3829,7 +3879,7 @@ packages:
     dev: true
 
   /media-typer/0.3.0:
-    resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
+    resolution: {integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=}
     engines: {node: '>= 0.6'}
     dev: false
     optional: true
@@ -4032,6 +4082,8 @@ packages:
       depd: 2.0.0
       on-finished: 2.3.0
       on-headers: 1.0.2
+    transitivePeerDependencies:
+      - supports-color
     dev: false
     optional: true
 
@@ -4111,6 +4163,7 @@ packages:
       tar: 6.1.11
       which: 2.0.2
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -4236,6 +4289,7 @@ packages:
       npm-package-arg: 9.1.0
       proc-log: 2.0.1
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -4340,6 +4394,21 @@ packages:
     resolution: {integrity: sha512-ZoXJkvAnljwvc56MbvhtKVWmSkzV712k42Is2mA0+0KTSRakq5XXuXpjZjgAt9ctzl51ojhQWakQQpmOvXWfjQ==}
     dev: false
     optional: true
+
+  /ovsx/0.5.1:
+    resolution: {integrity: sha512-3OWq0l7DuVHi2bd2aQe5+QVQlFIqvrcw3/2vGXL404L6Tr+R4QHtzfnYYghv8CCa85xJHjU0RhcaC7pyXkAUbg==}
+    engines: {node: '>= 14'}
+    hasBin: true
+    dependencies:
+      commander: 6.2.1
+      follow-redirects: 1.15.2
+      is-ci: 2.0.0
+      leven: 3.1.0
+      tmp: 0.2.1
+      vsce: 2.11.0
+    transitivePeerDependencies:
+      - debug
+    dev: true
 
   /p-finally/1.0.0:
     resolution: {integrity: sha512-LICb2p9CB7FS+0eR1oqWnHhp0FljGLZCWBE9aix0Uye9W8LTQPwMTYVGWQWIw9RdQiDg4+epXQODwIYJtSJaow==}
@@ -4455,6 +4524,7 @@ packages:
       ssri: 9.0.1
       tar: 6.1.11
     transitivePeerDependencies:
+      - bluebird
       - supports-color
     dev: false
     optional: true
@@ -4708,6 +4778,11 @@ packages:
 
   /promise-inflight/1.0.1:
     resolution: {integrity: sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==}
+    peerDependencies:
+      bluebird: '*'
+    peerDependenciesMeta:
+      bluebird:
+        optional: true
     dev: false
     optional: true
 
@@ -5800,7 +5875,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.3
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.7.20
+      '@types/node': 18.7.21
       chai: 4.3.6
       debug: 4.3.4
       local-pkg: 0.4.2

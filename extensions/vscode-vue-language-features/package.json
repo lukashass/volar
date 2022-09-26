@@ -14,7 +14,7 @@
 	"displayName": "Vue Language Features (Volar)",
 	"description": "Language support for Vue 3",
 	"author": "johnsoncodehk",
-	"publisher": "Vue",
+	"publisher": "lukashass",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
@@ -889,9 +889,9 @@
 		"prepack:browser": "npm run prebuild && npm run build:browser -- --minify && npm run build:node -- --empty",
 		"pack:node": "npm run prepack:node && vsce package",
 		"pack:browser": "npm run prepack:browser && vsce package",
-		"release:node": "npm run prepack:node && vsce publish --target win32-x64 win32-ia32 win32-arm64 linux-x64 linux-arm64 linux-armhf darwin-x64 darwin-arm64 alpine-x64 alpine-arm64",
+		"release:node": "npm run prepack:node && ovsx publish",
 		"release:browser": "npm run prepack:browser && vsce publish --target web",
-		"release": "npm run release:node && npm run release:browser"
+		"release": "npm run release:node"
 	},
 	"devDependencies": {
 		"@types/semver": "^7.3.12",
@@ -904,6 +904,7 @@
 		"@vue/reactivity": "^3.2.38",
 		"esbuild": "latest",
 		"esbuild-plugin-copy": "latest",
+		"ovsx": "^0.5.1",
 		"path-browserify": "^1.0.1",
 		"punycode": "^2.1.1",
 		"semver": "^7.3.7",
