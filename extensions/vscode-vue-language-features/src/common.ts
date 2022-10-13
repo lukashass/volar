@@ -8,6 +8,7 @@ import * as autoInsertion from './features/autoInsertion';
 import * as tsVersion from './features/tsVersion';
 import * as verifyAll from './features/verifyAll';
 import * as virtualFiles from './features/virtualFiles';
+import * as componentMeta from './features/componentMeta';
 import * as tsconfig from './features/tsconfig';
 import * as doctor from './features/doctor';
 import * as fileReferences from './features/fileReferences';
@@ -108,6 +109,7 @@ async function doActivate(context: vscode.ExtensionContext, createLc: CreateLang
 		verifyAll.register(context, semanticClient);
 		autoInsertion.register(context, syntacticClient, semanticClient);
 		virtualFiles.register(context, semanticClient);
+		componentMeta.register(context, semanticClient);
 	}
 
 	async function requestReloadVscode() {
@@ -198,6 +200,10 @@ export function processMd() {
 
 function getFillInitializeParams(featuresKinds: LanguageFeaturesKind[]) {
 	return function (params: lsp.InitializeParams) {
+
+		// fix https://github.com/johnsoncodehk/volar/issues/1959
+		params.locale = vscode.env.language;
+
 		if (params.capabilities.textDocument) {
 			if (!featuresKinds.includes(LanguageFeaturesKind.Semantic)) {
 				params.capabilities.textDocument.references = undefined;

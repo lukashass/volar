@@ -1,5 +1,54 @@
 # Changelog
 
+## 1.0.7 (2022/10/13)
+
+- feat(vue-language-core): support custom v-model prefix ([#2004](https://github.com/johnsoncodehk/volar/issues/2004))
+- feat: allow passing attributes array for `experimentalModelPropName` ignore setting ([#1821](https://github.com/johnsoncodehk/volar/issues/1821))
+- fix: `@volar/vue-language-plugin-pug` cause to doctor warns in Vue 2.7 project ([#2002](https://github.com/johnsoncodehk/volar/issues/2002))
+- fix: mitigate virtual file mapping highlights dislocation
+- fix: tag hover not working when enabled `jsxTemplates`
+- fix: avoid convert invalid JSX type to any when enabled `jsxTemplates`
+- fix: component JSX type invalid when enabled `jsxTemplates` but template has no any slots
+- perf: try skip convert attribute value to unicode
+
+### Our Sponsors
+
+<a href="https://cdn.jsdelivr.net/gh/johnsoncodehk/sponsors/company_compact/sponsors.svg">
+	<img src="https://cdn.jsdelivr.net/gh/johnsoncodehk/sponsors/company_compact/sponsors.svg"/>
+</a>
+
+## 1.0.6 (2022/10/12)
+
+- fix: component ast broken when use script setup with `export default` ([#1996](https://github.com/johnsoncodehk/volar/issues/1996))
+- fix: `experimentalModelPropName` link invalid ([#1999](https://github.com/johnsoncodehk/volar/issues/1999))
+- fix: `@volar/pug-language-service` crash ([#2000](https://github.com/johnsoncodehk/volar/issues/2000))
+
+## 1.0.5 (2022/10/12)
+
+- feat(doctor): report warning for `@types/node` version `>= 18.8.1` ([#1985](https://github.com/johnsoncodehk/volar/issues/1985))
+- fix: `@volar-examples/svelte-tsc`, `@volar-examples/svelte-typescript` released empty dist
+- fix: component syntax minor defect when enabled `experimentalRfc436`
+- fix: force use VSCode display language in language server ([#1959](https://github.com/johnsoncodehk/volar/issues/1959))
+- fix: don't hoisting defineProps type arg when disabled `experimentalRfc436` ([#1994](https://github.com/johnsoncodehk/volar/issues/1994))
+
+## 1.0.4 (2022/10/12)
+
+- feat: Support generic typed template slots for RFC 436 ([#1987](https://github.com/johnsoncodehk/volar/issues/1987))
+- feat: add `resolveTemplateCompilerOptions` API for `VueLanguagePlugin`
+- feat: support intellisense for `generic` attribute ([#1967](https://github.com/johnsoncodehk/volar/issues/1967))
+- feat: add `Show Component Meta` command for inspect `vue-component-meta` result
+- feat: add `vueCompilerOptions.experimentalModelPropName` for customize `v-model` binding prop for vue 2 component ([#1969](https://github.com/johnsoncodehk/volar/issues/1969))
+- fix: `TypeScript Vue Plugin (Volar)` stop working
+- fix: change `vueCompilerOptions.dataAttributes` default value from `["data-*"]` to `[]` ([#1965](https://github.com/johnsoncodehk/volar/issues/1965))
+- fix: component props order should be on the top ([#1972](https://github.com/johnsoncodehk/volar/issues/1972))
+- fix: `@volar/vue-language-plugin-pug` crash due to missing depend
+- fix: component tag highlight not working for pug template ([#1977](https://github.com/johnsoncodehk/volar/issues/1977))
+- fix: references codeLens number incorrect ([#1989](https://github.com/johnsoncodehk/volar/issues/1989))
+
+**Breaking changes**
+
+- Removed `experimentalTemplateCompilerOptions`, `experimentalTemplateCompilerOptionsRequirePath` from `vueCompilerOptions` ([#1991](https://github.com/johnsoncodehk/volar/issues/1991))
+
 ## 1.0.3 (2022/10/10)
 
 - feat: support `as` expressions in export assignment for script setup ([#1882](https://github.com/johnsoncodehk/volar/issues/1882))
@@ -13,12 +62,6 @@
 - fix(doctor): cannot resolve `vueCompilerOptions` from extends tsconfig
 - fix(doctor): cannot resolve vue version from sub folder ([#1961](https://github.com/johnsoncodehk/volar/issues/1961)) ([#1962](https://github.com/johnsoncodehk/volar/issues/1962))
 - fix: scoped class name no longer displays underline ([#1960](https://github.com/johnsoncodehk/volar/issues/1960))
-
-### Our Sponsors
-
-<a href="https://cdn.jsdelivr.net/gh/johnsoncodehk/sponsors/company_compact/sponsors.svg">
-	<img src="https://cdn.jsdelivr.net/gh/johnsoncodehk/sponsors/company_compact/sponsors.svg"/>
-</a>
 
 ## 1.0.1 (2022/10/9)
 

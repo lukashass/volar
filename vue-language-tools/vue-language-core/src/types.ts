@@ -27,10 +27,9 @@ export interface ResolvedVueCompilerOptions {
 
 	// experimental
 	experimentalRuntimeMode: 'runtime-dom' | 'runtime-uni-app';
-	experimentalTemplateCompilerOptions: any;
-	experimentalTemplateCompilerOptionsRequirePath: string | undefined;
 	experimentalResolveStyleCssClasses: 'scoped' | 'always' | 'never';
 	experimentalRfc436: boolean;
+	experimentalModelPropName: Record<string, Record<string, boolean | Record<string, string> | Record<string, string>[]>>;
 }
 
 export type VueLanguagePlugin = (ctx: {
@@ -46,7 +45,8 @@ export type VueLanguagePlugin = (ctx: {
 	order?: number;
 	parseSFC?(fileName: string, content: string): SFCParseResult | undefined;
 	updateSFC?(oldResult: SFCParseResult, textChange: { start: number, end: number, newText: string; }): SFCParseResult | undefined;
-	compileSFCTemplate?(lang: string, template: string, options?: CompilerDom.CompilerOptions): CompilerDom.CodegenResult | undefined;
+	resolveTemplateCompilerOptions?(options: CompilerDom.CompilerOptions): CompilerDom.CompilerOptions;
+	compileSFCTemplate?(lang: string, template: string, options: CompilerDom.CompilerOptions): CompilerDom.CodegenResult | undefined;
 	updateSFCTemplate?(oldResult: CompilerDom.CodegenResult, textChange: { start: number, end: number, newText: string; }): CompilerDom.CodegenResult | undefined;
 	getEmbeddedFileNames?(fileName: string, sfc: Sfc): string[];
 	resolveEmbeddedFile?(fileName: string, sfc: Sfc, embeddedFile: VueEmbeddedFile): void;
@@ -70,6 +70,7 @@ export interface Sfc {
 	scriptSetup: SfcBlock & {
 		// https://github.com/vuejs/rfcs/discussions/436
 		generic: string | undefined;
+		genericOffset: number;
 	} | null;
 	styles: (SfcBlock & {
 		module: string | undefined;
