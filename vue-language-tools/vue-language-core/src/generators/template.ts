@@ -153,6 +153,8 @@ export function generate(
 
 		const data: Record<string, string> = {};
 
+		codeGen.push(`let __VLS_templateComponents!: {\n`);
+
 		for (const tagName in tagNames) {
 
 			if (isIntrinsicElement(vueCompilerOptions.experimentalRuntimeMode, tagName))
@@ -162,18 +164,35 @@ export function generate(
 			if (isNamespacedTag)
 				continue;
 
-			const tagOffsets = tagNames[tagName];
-			const tagRanges: [number, number][] = tagOffsets.map(offset => [offset, offset + tagName.length]);
-			const var_componentVar = capitalize(camelize(tagName.replace(/:/g, '-')));
-
 			const names = new Set([
 				// order is important: https://github.com/johnsoncodehk/volar/issues/2010
 				capitalize(camelize(tagName)),
 				camelize(tagName),
 				tagName,
 			]);
+			const varName = validTsVar.test(tagName) ? tagName : capitalize(camelize(tagName.replace(/:/g, '-')));
 
-			codeGen.push(`let ${var_componentVar}!: import('./__VLS_types.js').GetComponents<typeof __VLS_components, ${[...names].map(name => `'${name}'`).join(', ')}>;\n`);
+			codeGen.push(`${varName}: import('./__VLS_types.js').GetComponents<typeof __VLS_components, ${[...names].map(name => `'${name}'`).join(', ')}>;\n`);
+
+			data[tagName] = varName;
+		}
+
+		codeGen.push(`};\n`);
+
+		for (const tagName in tagNames) {
+
+			const varName = data[tagName];
+			if (!varName)
+				continue;
+
+			const tagOffsets = tagNames[tagName];
+			const tagRanges: [number, number][] = tagOffsets.map(offset => [offset, offset + tagName.length]);
+			const names = new Set([
+				// order is important: https://github.com/johnsoncodehk/volar/issues/2010
+				capitalize(camelize(tagName)),
+				camelize(tagName),
+				tagName,
+			]);
 
 			for (const name of names) {
 				for (const tagRange of tagRanges) {
@@ -194,7 +213,22 @@ export function generate(
 			}
 			codeGen.push('\n');
 
-			data[tagName] = var_componentVar;
+			codeGen.push(`[`);
+			for (const tagRange of tagRanges) {
+				codeGen.push([
+					varName,
+					'template',
+					tagRange,
+					{
+						completion: {
+							additional: true,
+							autoImportOnly: true,
+						},
+					},
+				]);
+				codeGen.push(',');
+			}
+			codeGen.push(`];\n`);
 		}
 
 		return data;
@@ -212,9 +246,13 @@ export function generate(
 			const offsets = tagOffsetsMap[node.tag];
 			const source = sourceTemplate.substring(node.loc.start.offset);
 
-			offsets.push(node.loc.start.offset + source.indexOf(node.tag)); // start tag
+			const startTagOffset = node.loc.start.offset + source.indexOf(node.tag);
+			offsets.push(startTagOffset); // start tag
 			if (!node.isSelfClosing && sourceLang === 'html') {
-				offsets.push(node.loc.start.offset + node.loc.source.lastIndexOf(node.tag)); // end tag
+				const endTagOffset = node.loc.start.offset + node.loc.source.lastIndexOf(node.tag);
+				if (endTagOffset !== startTagOffset) {
+					offsets.push(endTagOffset); // end tag
+				}
 			}
 		});
 
@@ -408,13 +446,16 @@ export function generate(
 		codeGen.push(`{\n`);
 
 		const startTagOffset = node.loc.start.offset + sourceTemplate.substring(node.loc.start.offset).indexOf(node.tag);
-		const endTagOffset = !node.isSelfClosing && sourceLang === 'html' ? node.loc.start.offset + node.loc.source.lastIndexOf(node.tag) : undefined;
+		let endTagOffset = !node.isSelfClosing && sourceLang === 'html' ? node.loc.start.offset + node.loc.source.lastIndexOf(node.tag) : undefined;
+
+		if (endTagOffset === startTagOffset) {
+			endTagOffset = undefined;
+		}
 
 		let _unwritedExps: CompilerDOM.SimpleExpressionNode[];
 
 		const _isIntrinsicElement = isIntrinsicElement(vueCompilerOptions.experimentalRuntimeMode, node.tag);
 		const _isNamespacedTag = node.tag.indexOf('.') >= 0;
-		const tagText = componentVars[node.tag] ?? node.tag;
 
 		if (vueCompilerOptions.jsxTemplates) {
 
@@ -430,8 +471,11 @@ export function generate(
 			};
 
 			codeGen.push(`<`);
+			if (componentVars[node.tag]) {
+				codeGen.push(`__VLS_templateComponents.`);
+			}
 			codeGen.push([
-				tagText,
+				componentVars[node.tag] ?? node.tag,
 				'template',
 				[startTagOffset, startTagOffset + node.tag.length],
 				tagCapabilities,
@@ -445,8 +489,11 @@ export function generate(
 			}
 			else {
 				codeGen.push(`></`);
+				if (componentVars[node.tag]) {
+					codeGen.push(`__VLS_templateComponents.`);
+				}
 				codeGen.push([
-					tagText,
+					componentVars[node.tag] ?? node.tag,
 					'template',
 					[endTagOffset, endTagOffset + node.tag.length],
 					tagCapabilities,
@@ -504,10 +551,10 @@ export function generate(
 			}
 			else if (_isNamespacedTag) {
 
-				codeGen.push(`let ${var_props}!: import('./__VLS_types.js').ComponentProps<typeof ${tagText}>;\n`);
+				codeGen.push(`let ${var_props}!: import('./__VLS_types.js').ComponentProps<typeof ${node.tag}>;\n`);
 
 				codeGen.push([
-					tagText,
+					node.tag,
 					'template',
 					[startTagOffset, startTagOffset + node.tag.length],
 					capabilitiesSet.all,
@@ -516,7 +563,7 @@ export function generate(
 
 				if (endTagOffset !== undefined) {
 					codeGen.push([
-						tagText,
+						node.tag,
 						'template',
 						[endTagOffset, endTagOffset + node.tag.length],
 						capabilitiesSet.all,
@@ -527,8 +574,11 @@ export function generate(
 			else {
 
 				codeGen.push(`let ${var_props}!: import('./__VLS_types.js').ComponentProps<typeof `);
+				if (componentVars[node.tag]) {
+					codeGen.push(`__VLS_templateComponents.`);
+				}
 				codeGen.push([
-					tagText,
+					componentVars[node.tag] ?? node.tag,
 					'template',
 					[startTagOffset, startTagOffset + node.tag.length],
 					capabilitiesSet.tagHover,
@@ -536,8 +586,11 @@ export function generate(
 				codeGen.push(`>;\n`);
 
 				if (endTagOffset !== undefined) {
+					if (componentVars[node.tag]) {
+						codeGen.push(`__VLS_templateComponents.`);
+					}
 					codeGen.push([
-						tagText,
+						componentVars[node.tag] ?? node.tag,
 						'template',
 						[endTagOffset, endTagOffset + node.tag.length],
 						capabilitiesSet.tagHover,
@@ -655,9 +708,9 @@ export function generate(
 					codeGen.push(`JSX.IntrinsicElements['${node.tag}'];\n`);
 				}
 				else {
-					codeGen.push(`import('./__VLS_types.js').InstanceProps<typeof ${varComponentInstance}, ${componentVar ? 'typeof ' + componentVar : '{}'}>;\n`);;
+					codeGen.push(`import('./__VLS_types.js').InstanceProps<typeof ${varComponentInstance}, ${componentVar ? 'typeof __VLS_templateComponents.' + componentVar : '{}'}>;\n`);;
 				}
-				codeGen.push(`const __VLS_${elementIndex++}: import('./__VLS_types.js').EventObject<typeof ${varComponentInstance}, '${prop.arg.loc.source}', ${componentVar ? 'typeof ' + componentVar : '{}'}, `);
+				codeGen.push(`const __VLS_${elementIndex++}: import('./__VLS_types.js').EventObject<typeof ${varComponentInstance}, '${prop.arg.loc.source}', ${componentVar ? 'typeof __VLS_templateComponents.' + componentVar : '{}'}, `);
 
 				codeGen.push(`${varInstanceProps}[`);
 				writeCodeWithQuotes(
@@ -1217,10 +1270,10 @@ export function generate(
 				const varSlots = `__VLS_${elementIndex++}`;
 
 				if (componentVar && parentEl) {
-					codeGen.push(`const ${varComponentInstanceA} = new ${componentVar}({ `);
+					codeGen.push(`const ${varComponentInstanceA} = new __VLS_templateComponents.${componentVar}({ `);
 					writeProps(parentEl, 'class', 'slots');
 					codeGen.push(`});\n`);
-					codeGen.push(`const ${varComponentInstanceB} = ${componentVar}({ `);
+					codeGen.push(`const ${varComponentInstanceB} = __VLS_templateComponents.${componentVar}({ `);
 					writeProps(parentEl, 'class', 'slots');
 					codeGen.push(`});\n`);
 					writeInterpolationVarsExtraCompletion();
@@ -1681,7 +1734,7 @@ export function generate(
 				}
 				codeGen.push(addSubfix);
 			}
-		}, localVars, identifiers);
+		}, localVars, identifiers, vueCompilerOptions);
 		if (sourceOffset !== undefined) {
 			for (const v of vars) {
 				v.offset = sourceOffset + v.offset - prefix.length;

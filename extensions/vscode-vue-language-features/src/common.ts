@@ -8,6 +8,7 @@ import * as autoInsertion from './features/autoInsertion';
 import * as tsVersion from './features/tsVersion';
 import * as verifyAll from './features/verifyAll';
 import * as virtualFiles from './features/virtualFiles';
+import * as serverStatus from './features/serverStatus';
 import * as componentMeta from './features/componentMeta';
 import * as tsconfig from './features/tsconfig';
 import * as doctor from './features/doctor';
@@ -47,14 +48,14 @@ export async function activate(context: vscode.ExtensionContext, createLc: Creat
 			return;
 		}
 
-		const currentlangId = vscode.window.activeTextEditor.document.languageId;
-		if (currentlangId === 'vue' || (currentlangId === 'markdown' && processMd()) || (currentlangId === 'html' && processHtml())) {
+		const currentLangId = vscode.window.activeTextEditor.document.languageId;
+		if (currentLangId === 'vue' || (currentLangId === 'markdown' && processMd()) || (currentLangId === 'html' && processHtml())) {
 			doActivate(context, createLc);
 			stopCheck.dispose();
 		}
 
 		const takeOverMode = takeOverModeEnabled();
-		if (takeOverMode && ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'].includes(currentlangId)) {
+		if (takeOverMode && ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'].includes(currentLangId)) {
 			doActivate(context, createLc);
 			stopCheck.dispose();
 		}
@@ -64,8 +65,6 @@ export async function activate(context: vscode.ExtensionContext, createLc: Creat
 async function doActivate(context: vscode.ExtensionContext, createLc: CreateLanguageClient) {
 
 	vscode.commands.executeCommand('setContext', 'volar.activated', true);
-
-	const _serverMaxOldSpaceSize = serverMaxOldSpaceSize();
 
 	[semanticClient, syntacticClient] = await Promise.all([
 		createLc(
@@ -109,6 +108,7 @@ async function doActivate(context: vscode.ExtensionContext, createLc: CreateLang
 		verifyAll.register(context, semanticClient);
 		autoInsertion.register(context, syntacticClient, semanticClient);
 		virtualFiles.register(context, semanticClient);
+		serverStatus.register(context, semanticClient);
 		componentMeta.register(context, semanticClient);
 	}
 
@@ -121,9 +121,15 @@ async function doActivate(context: vscode.ExtensionContext, createLc: CreateLang
 		vscode.commands.executeCommand('workbench.action.reloadWindow');
 	}
 	function registerServerMaxOldSpaceSizeChange() {
-		vscode.workspace.onDidChangeConfiguration(async () => {
-			const nowServerMaxOldSpaceSize = serverMaxOldSpaceSize();
-			if (_serverMaxOldSpaceSize !== nowServerMaxOldSpaceSize) {
+		vscode.workspace.onDidChangeConfiguration(async (e) => {
+			if (
+				e.affectsConfiguration('volar.vueserver.maxOldSpaceSize')
+				|| e.affectsConfiguration('volar.vueserver.diagnosticModel')
+				|| e.affectsConfiguration('volar.vueserver.noProjectReferences')
+				|| e.affectsConfiguration('volar.vueserver.petiteVue.processHtmlFile')
+				|| e.affectsConfiguration('volar.vueserver.vitePress.processMdFile')
+				|| e.affectsConfiguration('volar.vueserver.additionalExtensions')
+			) {
 				return requestReloadVscode();
 			}
 		});
@@ -186,10 +192,6 @@ export function getDocumentSelector(serverMode: ServerMode) {
 	return langs;
 }
 
-function serverMaxOldSpaceSize() {
-	return vscode.workspace.getConfiguration('volar').get<number | null>('vueserver.maxOldSpaceSize');
-}
-
 export function processHtml() {
 	return !!vscode.workspace.getConfiguration('volar').get<boolean>('vueserver.petiteVue.processHtmlFile');
 }
@@ -200,6 +202,14 @@ export function processMd() {
 
 export function noProjectReferences() {
 	return !!vscode.workspace.getConfiguration('volar').get<boolean>('vueserver.noProjectReferences');
+}
+
+export function diagnosticModel() {
+	return vscode.workspace.getConfiguration('volar').get<'push' | 'pull'>('vueserver.diagnosticModel');
+}
+
+function additionalExtensions() {
+	return vscode.workspace.getConfiguration('volar').get<string[]>('vueserver.additionalExtensions') ?? [];
 }
 
 function getFillInitializeParams(featuresKinds: LanguageFeaturesKind[]) {
@@ -255,7 +265,7 @@ function getInitializationOptions(
 	const textDocumentSync = vscode.workspace.getConfiguration('volar').get<'incremental' | 'full' | 'none'>('vueserver.textDocumentSync');
 	const initializationOptions: VueServerInitializationOptions = {
 		serverMode,
-		diagnosticModel: DiagnosticModel.Push,
+		diagnosticModel: diagnosticModel() === 'pull' ? DiagnosticModel.Pull : DiagnosticModel.Push,
 		textDocumentSync: textDocumentSync ? {
 			incremental: lsp.TextDocumentSyncKind.Incremental,
 			full: lsp.TextDocumentSyncKind.Full,
@@ -269,6 +279,7 @@ function getInitializationOptions(
 			processMdFile: processMd(),
 		},
 		noProjectReferences: noProjectReferences(),
+		additionalExtensions: additionalExtensions()
 	};
 	return initializationOptions;
 }

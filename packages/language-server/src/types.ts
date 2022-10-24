@@ -48,8 +48,6 @@ export type LanguageServerPlugin<
 
 	semanticService?: {
 
-		semanticTokenLegend?: vscode.SemanticTokensLegend,
-
 		resolveLanguageServiceHost?(
 			ts: typeof import('typescript/lib/tsserverlibrary'),
 			sys: FileSystem,
@@ -66,7 +64,7 @@ export type LanguageServerPlugin<
 
 		onInitialize?(
 			connection: vscode.Connection,
-			getLangaugeService: (uri: string) => Promise<C>,
+			getLanguageService: (uri: string) => Promise<C>,
 		): void,
 	},
 

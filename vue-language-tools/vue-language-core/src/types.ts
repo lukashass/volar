@@ -15,6 +15,7 @@ export type VueCompilerOptions = Partial<ResolvedVueCompilerOptions>;
 
 export interface ResolvedVueCompilerOptions {
 	target: 2 | 2.7 | 3;
+	extensions: string[];
 	jsxTemplates: boolean;
 	strictTemplates: boolean;
 	skipTemplateCodegen: boolean;
@@ -30,6 +31,7 @@ export interface ResolvedVueCompilerOptions {
 	experimentalResolveStyleCssClasses: 'scoped' | 'always' | 'never';
 	experimentalRfc436: boolean;
 	experimentalModelPropName: Record<string, Record<string, boolean | Record<string, string> | Record<string, string>[]>>;
+	experimentalUseElementAccessInTemplate: boolean;
 }
 
 export type VueLanguagePlugin = (ctx: {

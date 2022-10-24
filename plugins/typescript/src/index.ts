@@ -1,11 +1,10 @@
 import type { LanguageServicePlugin, LanguageServicePluginContext } from '@volar/language-service';
-import * as ts2 from './createLangaugeService';
+import * as ts2 from './createLanguageService';
 import * as semver from 'semver';
 import type * as ts from 'typescript/lib/tsserverlibrary';
 import * as vscode from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-
-export { getSemanticTokenLegend } from './createLangaugeService';
+import * as shared from '@volar/shared';
 
 function getBasicTriggerCharacters(tsVersion: string) {
 
@@ -46,6 +45,23 @@ export default function (): LanguageServicePlugin {
 				(section, scopeUri) => context.env.configurationHost?.getConfiguration(section, scopeUri) as any,
 				context.env.rootUri,
 			);
+		},
+
+		doAutoInsert(document, position, ctx) {
+			if (
+				(document.languageId === 'javascriptreact' || document.languageId === 'typescriptreact')
+				&& ctx.lastChange.text.endsWith('>')
+			) {
+				const configName = document.languageId === 'javascriptreact' ? 'javascript.autoClosingTags' : 'typescript.autoClosingTags';
+				const config = context.env.configurationHost?.getConfiguration<boolean>(configName) ?? true;
+				if (config) {
+					const tsLs = context.typescript.languageService;
+					const close = tsLs.getJsxClosingTagAtPosition(shared.getPathOfUri(document.uri), document.offsetAt(position));
+					if (close) {
+						return '$0' + close.newText;
+					}
+				}
+			}
 		},
 
 		complete: {
@@ -230,9 +246,9 @@ export default function (): LanguageServicePlugin {
 			}
 		},
 
-		findDocumentSemanticTokens(document, range) {
+		findDocumentSemanticTokens(document, range, legend) {
 			if (isTsDocument(document)) {
-				return tsLs2.getDocumentSemanticTokens(document.uri, range);
+				return tsLs2.getDocumentSemanticTokens(document.uri, range, legend);
 			}
 		},
 

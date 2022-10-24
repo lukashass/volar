@@ -1,5 +1,5 @@
 import type * as ts from 'typescript/lib/tsserverlibrary';
-import type { GetConfiguration } from '../createLangaugeService';
+import type { GetConfiguration } from '../createLanguageService';
 import { isTypeScriptDocument } from './shared';
 import { posix as path } from 'path';
 import { URI } from 'vscode-uri';
@@ -10,12 +10,8 @@ export async function getUserPreferences(
 	workspaceFolder: URI | undefined,
 ): Promise<ts.UserPreferences> {
 
-	let config = await getConfiguration(isTypeScriptDocument(uri) ? 'typescript' : 'javascript', uri);
-	let preferencesConfig = await getConfiguration(isTypeScriptDocument(uri) ? 'typescript.preferences' : 'javascript.preferences', uri);
-
-	config = config ?? {};
-	preferencesConfig = preferencesConfig ?? {};
-
+	const config = await getConfiguration(isTypeScriptDocument(uri) ? 'typescript' : 'javascript', uri) ?? {};
+	const preferencesConfig = await getConfiguration(isTypeScriptDocument(uri) ? 'typescript.preferences' : 'javascript.preferences', uri) ?? {};
 	const preferences: ts.UserPreferences = {
 		...config.unstable ?? {},
 		quotePreference: getQuoteStylePreference(preferencesConfig),

@@ -10,7 +10,7 @@ import { createSnapshots } from './snapshots';
 import { ConfigurationHost } from '@volar/language-service';
 import * as html from 'vscode-html-languageservice';
 import * as path from 'typesafe-path';
-import { CancellactionTokenHost } from './cancellationPipe';
+import { CancellationTokenHost } from './cancellationPipe';
 
 export interface Project extends ReturnType<typeof createProject> { }
 
@@ -25,7 +25,7 @@ export async function createProject(
 	documents: ReturnType<typeof createSnapshots>,
 	configHost: ConfigurationHost | undefined,
 	documentRegistry: ts.DocumentRegistry | undefined,
-	cancelTokenHost: CancellactionTokenHost,
+	cancelTokenHost: CancellationTokenHost,
 	serverOptions: LanguageServerInitializationOptions,
 ) {
 
@@ -54,9 +54,18 @@ export async function createProject(
 	});
 
 	return {
+		tsConfig,
+		scripts,
+		languageServiceHost,
 		getLanguageService,
 		getLanguageServiceDontCreate: () => vueLs,
 		getParsedCommandLine: () => parsedCommandLine,
+		tryAddFile: (fileName: string) => {
+			if (!parsedCommandLine.fileNames.includes(fileName)) {
+				parsedCommandLine.fileNames.push(fileName);
+				projectVersion++;
+			}
+		},
 		dispose,
 	};
 
@@ -122,6 +131,7 @@ export async function createProject(
 
 		if (creates.length || deletes.length) {
 			parsedCommandLine = createParsedCommandLine(ts, sys, shared.getPathOfUri(rootUri.toString()), tsConfig, plugins);
+			projectVersion++;
 			typeRootVersion++;
 		}
 	}
@@ -250,7 +260,7 @@ function createParsedCommandLine(
 			content = ts.parseJsonSourceFileConfigFileContent(config, sys, path.dirname(tsConfig), {}, tsConfig, undefined, extraFileExtensions);
 		}
 		else {
-			content = ts.parseJsonConfigFileContent({}, sys, rootPath, tsConfig, path.join(rootPath, 'jsconfig.json' as path.PosixPath), undefined, extraFileExtensions);
+			content = ts.parseJsonConfigFileContent({ files: [] }, sys, rootPath, tsConfig, path.join(rootPath, 'jsconfig.json' as path.PosixPath), undefined, extraFileExtensions);
 		}
 		// fix https://github.com/johnsoncodehk/volar/issues/1786
 		// https://github.com/microsoft/TypeScript/issues/30457

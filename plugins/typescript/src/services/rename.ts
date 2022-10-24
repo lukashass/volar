@@ -4,7 +4,7 @@ import * as shared from '@volar/shared';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { posix as path } from 'path';
 import { renameInfoOptions } from './prepareRename';
-import type { GetConfiguration } from '../createLangaugeService';
+import type { GetConfiguration } from '../createLanguageService';
 import { URI } from 'vscode-uri';
 import { getFormatCodeSettings } from '../configs/getFormatCodeSettings';
 import { getUserPreferences } from '../configs/getUserPreferences';
@@ -94,7 +94,10 @@ export function fileTextChangesToWorkspaceEdit(rootUri: URI, changes: readonly t
 			continue;
 
 		const docEdit = vscode.TextDocumentEdit.create(
-			{ uri: uri, version: doc.version },
+			{
+				uri,
+				version: null, // fix https://github.com/johnsoncodehk/volar/issues/2025
+			},
 			[],
 		);
 
