@@ -21,7 +21,7 @@ jobs:
         with:
           version: 7
 
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --no-optional --filter "." --filter "./packages/**" --filter "./plugins/**" --filter "./vue-language-tools/** --filter "./extensions/vscode-vue-language-features"
       - run: pnpm run prepack:node && pnpm ovsx publish
         working-directory: extensions/vscode-vue-language-features
         env:
