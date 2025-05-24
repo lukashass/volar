@@ -27,11 +27,12 @@ jobs:
 
       - name: Publish
         run: |
-          TAG_NAME=${GITHUB_REF##*/}
-          if [[ "$TAG_NAME" == *-* ]]; then
-            echo "Detected prerelease version: $TAG_NAME"
+          VERSION=$(jq -r .version package.json)
+          echo "Detected version: $VERSION"
+          if [[ "$VERSION" == *-* ]]; then
+            echo "Detected prerelease version: $VERSION"
           else
-            echo "Detected stable release version: $TAG_NAME"
+            echo "Detected stable release version: $VERSION"
           fi
         working-directory: extensions/vscode
         env:
