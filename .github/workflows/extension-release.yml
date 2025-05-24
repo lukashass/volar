@@ -30,10 +30,8 @@ jobs:
           TAG_NAME=${GITHUB_REF##*/}
           if [[ "$TAG_NAME" == *-* ]]; then
             echo "Detected prerelease version: $TAG_NAME"
-            pnpm ovsx publish --pre-release
           else
             echo "Detected stable release version: $TAG_NAME"
-            pnpm ovsx publish
           fi
         working-directory: extensions/vscode
         env:
